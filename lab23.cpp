@@ -1,17 +1,20 @@
 #include<iostream>
 #include<cmath>
+
 using namespace std;
+
+
 
 class ComplexNumber{				
 	public:
 		double real;
 		double imag;
 		ComplexNumber(double,double);
-		ComplexNumber operator+(const ComplexNumber &);
-		ComplexNumber operator-(const ComplexNumber &);
-		ComplexNumber operator*(const ComplexNumber &);
-		ComplexNumber operator/(const ComplexNumber &);
-		bool operator==(const ComplexNumber &);
+		friend ComplexNumber operator+(const ComplexNumber &,const ComplexNumber &);
+		friend ComplexNumber operator-(const ComplexNumber &,const ComplexNumber &);
+		friend ComplexNumber operator*(const ComplexNumber &,const ComplexNumber &);
+		friend ComplexNumber operator/(const ComplexNumber &,const ComplexNumber &);
+		friend bool operator==(const ComplexNumber &,const ComplexNumber &);
 		double abs();
 		double angle();
 };
@@ -20,12 +23,53 @@ ComplexNumber::ComplexNumber(double x = 0,double y = 0){
 	real = x; imag = y;
 }
 
-ComplexNumber ComplexNumber::operator+(const ComplexNumber &c){
-	return ComplexNumber(real+c.real,imag+c.imag);
+ComplexNumber operator+(const ComplexNumber &z1,const ComplexNumber &z2){
+	return ComplexNumber(z1.real+z2.real,z1.imag+z2.imag);
 }
 
-ComplexNumber ComplexNumber::operator-(const ComplexNumber &c){
-	return ComplexNumber(real-c.real,imag-c.imag);
+ComplexNumber operator-(const ComplexNumber &z1,const ComplexNumber &z2){
+	return ComplexNumber(z1.real-z2.real,z1.imag-z2.imag);
+}
+
+ComplexNumber operator*(const ComplexNumber &z1,const ComplexNumber &z2){
+	ComplexNumber a(z1),b(z2);
+	double r = a.abs()*b.abs();
+	double theta = a.angle()+b.angle();
+	theta = theta*M_PI/180;
+	return ComplexNumber(r*cos(theta),r*sin(theta));
+}
+
+ComplexNumber operator/(const ComplexNumber &z1,const ComplexNumber &z2){
+	ComplexNumber a(z1),b(z2);
+	double r = a.abs()/b.abs();
+	double theta = a.angle()-b.angle();
+	theta = theta*M_PI/180;
+	return ComplexNumber(r*cos(theta),r*sin(theta));
+}
+
+bool operator==(const ComplexNumber &z1,const ComplexNumber &z2){
+	if(z1.real == z2.real && z1.imag == z2.imag) return true;
+	else return false;
+}
+
+double ComplexNumber::abs(){
+	return sqrt(pow(real,2)+pow(imag,2));
+}
+
+double ComplexNumber::angle(){
+	if(real>=0 && imag >= 0) return atan(imag/real)*180/M_PI;
+	if(real<=0 && imag >= 0) return atan(imag/real)*180/M_PI+180;
+	if(real<=0 && imag <= 0) return atan(imag/real)*180/M_PI-180;
+	if(real>=0 && imag <= 0) return atan(imag/real)*180/M_PI;
+	return 0;
+}
+
+ostream &operator<<(ostream &os, const ComplexNumber &z){
+	if(z.real == 0 && z.imag == 0 ) return os << "0";
+	if(z.imag == 0) return os << z.real;
+	if(z.real == 0) return os << z.imag << "i";
+	if(z.imag < 0) return os << z.real << z.imag << "i";
+	else  return os << z.real << "+" << z.imag << "i";
 }
 
 //Write your code here
